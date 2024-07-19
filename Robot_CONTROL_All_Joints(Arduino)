@@ -1,0 +1,56 @@
+#include <Servo.h>
+
+Servo servoRoll;   // Create servo object to control roll
+Servo servoPitch1; // Create servo object to control pitch1
+Servo servoPitch2; // Create servo object to control pitch2
+Servo servoPitch3; // Create servo object to control pitch3
+
+const int rollPin = 3;    // Pin to which the roll servo is connected
+const int pitch1Pin = 5;  // Pin to which the pitch1 servo is connected
+const int pitch2Pin = 6;  // Pin to which the pitch2 servo is connected
+const int pitch3Pin = 9;  // Pin to which the pitch3 servo is connected
+
+void setup() {
+  // Attach servos to the appropriate pins
+  servoRoll.attach(rollPin);
+  servoPitch1.attach(pitch1Pin);
+  servoPitch2.attach(pitch2Pin);
+  servoPitch3.attach(pitch3Pin);
+
+  // Initialize serial communication at 9600 baud rate
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Check if data is available to read
+  if (Serial.available() > 0) {
+    // Read the incoming data as a string
+    String angles = Serial.readStringUntil('\n');
+
+    // Split the string into individual angles
+    int firstCommaIndex = angles.indexOf(',');
+    int secondCommaIndex = angles.indexOf(',', firstCommaIndex + 1);
+    int thirdCommaIndex = angles.indexOf(',', secondCommaIndex + 1);
+
+    int rollAngle = angles.substring(0, firstCommaIndex).toInt();
+    int pitch1Angle = angles.substring(firstCommaIndex + 1, secondCommaIndex).toInt();
+    int pitch2Angle = angles.substring(secondCommaIndex + 1, thirdCommaIndex).toInt();
+    int pitch3Angle = angles.substring(thirdCommaIndex + 1).toInt();
+
+    // Set the servo angles
+    servoRoll.write(rollAngle);
+    servoPitch1.write(pitch1Angle);
+    servoPitch2.write(pitch2Angle);
+    servoPitch3.write(pitch3Angle);
+
+    // Print the angles to the serial monitor for debugging
+    Serial.print("Roll: ");
+    Serial.print(rollAngle);
+    Serial.print(", Pitch1: ");
+    Serial.print(pitch1Angle);
+    Serial.print(", Pitch2: ");
+    Serial.print(pitch2Angle);
+    Serial.print(", Pitch3: ");
+    Serial.println(pitch3Angle);
+  }
+}
